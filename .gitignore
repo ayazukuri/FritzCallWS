@@ -1,3 +1,4 @@
 node_modules
-exmaple.js
-ssl/
+ssl/*
+!ssl/.gitkeep
+config.json
