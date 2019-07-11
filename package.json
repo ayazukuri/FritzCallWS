@@ -1,0 +1,19 @@
+{
+  "name": "fritzapi",
+  "version": "1.0.0",
+  "description": "REST API for interacting with the AVM fritzbox",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "onerisc",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-ws": "^4.0.0",
+    "fritzbox.js": "^2.0.1",
+    "request": "^2.88.0",
+    "websocket": "^1.0.29",
+    "ws": "^7.1.0"
+  }
+}
