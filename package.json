@@ -1,6 +1,6 @@
 {
   "name": "fritzcallws",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "WSS server for interaction with the FritzBox call monitor",
   "main": "index.js",
   "scripts": {

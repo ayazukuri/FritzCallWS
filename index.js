@@ -55,22 +55,9 @@ app.ws("/", async (ws, req) => {
             protocol: "https",
             callmonitorport: 1012
         }
-        try {
-            global.sessionId = await fritz.getSessionId(options);
-            monitor = new fritz.CallMonitor(options);
-            monitor.on("inbound", call => {
-                log(`Call received from ${call.caller}`);
-                for (const [id, socket] of sockets) {
-                    socket.send(JSON.stringify({
-                        type: "call",
-                        data: call
-                    }));
-                }
-            });
-            ws.id = new Date().getTime();
-            sockets.set(ws.id, ws);
-            log(`Websocket ${ws.id} connected`);
-        } catch (e) {
+        global.sessionId = await fritz.getSessionId(options);
+        if (global.sessionId.error) {
+            delete global.sessionId;
             options = undefined;
             monitor = undefined;
             ws.send(JSON.stringify({
@@ -78,8 +65,30 @@ app.ws("/", async (ws, req) => {
                 status: "Invalid login information"
             }));
             ws.close();
+            log(`Connection rejected: Invalid login`)
             return;
         }
+        monitor = new fritz.CallMonitor(options);
+        monitor.on("inbound", call => {
+            log(`Call received from ${call.caller}`);
+            for (const [id, socket] of sockets) {
+                socket.send(JSON.stringify({
+                    type: "call",
+                    data: call
+                }));
+            }
+        });
+        monitor.on("disconnected", () => {
+            log(`Call over`);
+            for (const [id, socket] of sockets) {
+                socket.send(JSON.stringify({
+                    type: "callEnd"
+                }));
+            }
+        })
+        ws.id = new Date().getTime();
+        sockets.set(ws.id, ws);
+        log(`Websocket ${ws.id} connected`);
     } else {
         if (options.username !== data.username || options.password !== data.password) {
             ws.send(JSON.stringify({
